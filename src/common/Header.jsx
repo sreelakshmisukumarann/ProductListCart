@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import logoImg from "../assets/logoimg.png";
+import logoImg from "../assets/Logoimg.png";
 import { useCart } from "../contextAPI/CartContext";
 
 function Header() {
