@@ -1,32 +1,33 @@
-import React, { useEffect } from "react";
-import { Col, Row } from "react-bootstrap";
-import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
+import React, { useEffect, useState } from "react";
+import { Col, Row, Spinner } from "react-bootstrap";
 import ProductCard from "../components/ProductCard";
-import { useState } from "react";
 import Header from "../common/Header";
 import { displayProduct } from "../services/allAPI";
 import { useCart } from "../contextAPI/CartContext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function ProductListPage() {
   const [products, setProducts] = useState([]);
-  const { searchTerm } = useCart();
+  const [loading, setLoading] = useState(true);
+  const { searchTerm, loadingCart } = useCart();
 
   const getProductList = async () => {
+    setLoading(true);
     try {
       const result = await displayProduct();
       setProducts(result.data.productList);
     } catch (error) {
-      console.error("error fetching data");
+      console.error("Error fetching data");
     }
+    setLoading(false);
   };
 
   useEffect(() => {
     getProductList();
   }, []);
-  console.log("data", products);
 
-  //  filtering product
+  // filter products by search
   const filteredProducts = products.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -34,33 +35,38 @@ function ProductListPage() {
   return (
     <>
       <Header />
+      <ToastContainer position="top-left" />
       <div className="d-flex justify-content-center align-items-center flex-column mt-5 pt-20 text-center px-3">
-  <h2 className="" style={{ color: "#5b3d81" }}>
-    Online Shopping
-  </h2>
-  <p className="w-75 w-md-50">
-    You can explore our Products, and you can buy your favorite pieces.
-  </p>
-</div>
+        <h2 style={{ color: "#5b3d81" }}>Online Shopping</h2>
+        <p className="w-75 w-md-50">
+          You can explore our Products, and you can buy your favorite pieces.
+        </p>
+      </div>
 
-      <div>
-        <Row className="p-5">
-          {filteredProducts?.length > 0 ? (
-            filteredProducts.map((item) => (
+      <div className="p-5">
+        {loading ? (
+          <div className="d-flex justify-content-center align-items-center">
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </div>
+        ) : filteredProducts?.length > 0 ? (
+          <Row>
+            {filteredProducts.map((item) => (
               <Col
                 key={item._id}
                 lg={4}
                 sm={12}
                 md={6}
-                className="d-flex justify-content-center"
+                className="d-flex justify-content-center mb-4"
               >
-                <ProductCard product={item} />
+                <ProductCard product={item} loadingCart={loadingCart} />
               </Col>
-            ))
-          ) : (
-            <p>Nothing to display</p>
-          )}
-        </Row>
+            ))}
+          </Row>
+        ) : (
+          <p className="text-center">Nothing to display</p>
+        )}
       </div>
     </>
   );

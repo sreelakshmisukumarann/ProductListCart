@@ -88,7 +88,9 @@ function CartPage() {
               alt="empty cart"
               height={"100px"}
             />
-            <h3 className="fw-bolder" style={{color:'#5b3d81'}}>Your Cart is empty</h3>
+            <h3 className="fw-bolder" style={{ color: "#5b3d81" }}>
+              Your Cart is empty
+            </h3>
           </div>
         )}
       </div>
